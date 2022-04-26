@@ -14,9 +14,13 @@ fn main() {
     if args.len() < 2 {
         println!("Not enough arguments.");
         process::exit(1);
+    } else {
+        run_from_file(args[1].clone());
     }
+}
 
-    let (file_content, brackets_pos) = match preprocess_source(args[1].clone()) {
+fn run_from_file(file: String) {
+    let (file_content, brackets_pos) = match preprocess_source(file) {
         Err(e) => {
             eprintln!("Some error occured: {}", e);
             process::exit(1);

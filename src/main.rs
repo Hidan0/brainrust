@@ -10,9 +10,6 @@ use std::{
 use regex::Regex;
 
 fn main() {
-    let mut data: Vec<u8> = vec![0];
-    let mut dp = 0; // data pointer
-
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         println!("Not enough arguments.");
@@ -27,7 +24,11 @@ fn main() {
         Ok(tup) => tup,
     };
 
+    let mut data: Vec<u8> = vec![0];
+    let mut input_buffer: Vec<u8> = vec![];
+    let mut dp = 0; // data pointer
     let mut ip = 0; // instruction pointer
+
     loop {
         if ip < file_content.len() {
             let ch = file_content[ip] as char;
@@ -48,11 +49,18 @@ fn main() {
                 print!("{}", data[dp] as char);
                 let _ = stdout().flush();
             } else if ch == ',' {
-                let mut buffer = String::new();
-                io::stdin()
-                    .read_line(&mut buffer)
-                    .expect("Failed to read input");
-                data[dp] = buffer.as_bytes()[0];
+                if input_buffer.is_empty() {
+                    let mut buffer = String::new();
+                    io::stdin()
+                        .read_line(&mut buffer)
+                        .expect("Failed to read input!");
+                    input_buffer = buffer.as_bytes().to_owned();
+                }
+
+                if let Some(c) = input_buffer.get(0) {
+                    data[dp] = *c;
+                    input_buffer.remove(0);
+                }
             } else if ch == '>' {
                 if dp + 1 >= data.len() {
                     data.push(0);
